@@ -62,7 +62,7 @@ class MetricContainer(object):
         data set requested ('src', 'calexp', etc.).  Second
         element is the dataId.
         """
-        if not isintance(val, tuple):
+        if not isinstance(val, tuple):
             raise RuntimeError("Must add tuples to data_request")
 
         if len(val) != 2:
