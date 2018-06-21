@@ -22,14 +22,17 @@ if __name__ == "__main__":
 
     butler = daf_persistence.Butler('/datasets/hsc/repo/rerun/DM-13666/WIDE')
 
-    ct_metric = CtMetricContainer()
-    ct_metric.metric_yaml = "metrics/ct_metric.yaml"
-    ct_metric.specs_dir = "metrics/ct_metric"
-    data_request = ('src', {'filter':'HSC-Y', 'ccd':28, 'visit':374})
-    ct_metric.add_data_request(data_request)
-
     job_driver = JobDriver()
     job_driver.butler =butler
-    job_driver.add_metric(ct_metric)
+
+    for i_ccd in range(29):
+        data_id = {'filter':'HSC-Y', 'ccd':i_ccd, 'visit':374}
+        if butler.datasetExists('src', dataId=data_id):
+            ct_metric = CtMetricContainer()
+            ct_metric.metric_yaml = "metrics/ct_metric.yaml"
+            ct_metric.specs_dir = "metrics/ct_metric"
+            data_request = ('src', data_id)
+            ct_metric.add_data_request(data_request)
+            job_driver.add_metric(ct_metric)
 
     job_driver.run()
