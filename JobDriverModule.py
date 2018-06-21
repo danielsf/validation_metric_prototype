@@ -87,7 +87,7 @@ class JobDriver(object):
                         max_id = data_id
                         max_ct = data_id_to_ct[data_id]
 
-            print('max_id ',max_id)
+            print('loading ',max_id)
             data = self._butler.get(max_id[0],
                                     dataId=json.loads(max_id[1]))
 
