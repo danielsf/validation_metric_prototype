@@ -44,7 +44,7 @@ class JobDriver(object):
 
         id_to_ct = {}
         for metric in self._metric_list:
-            if metric.measurement is None:
+            if metric.measurement is not None:
                 continue
 
             for data in metric.data_request:
@@ -56,8 +56,8 @@ class JobDriver(object):
         return id_to_ct
 
     def _is_data_needed(self, data_id):
-        for metirc in self._metric_list:
-            if metric.measurement is None:
+        for metric in self._metric_list:
+            if metric.measurement is not None:
                 continue
             if data_id in metric.data_request:
                 return True
@@ -66,7 +66,7 @@ class JobDriver(object):
 
     def _run_all(self):
         for metric in self._metric_list:
-            if metric.measurement is None:
+            if metric.measurement is not None:
                 continue
             ready_to_run = True
             for data_id in metric.data_request:
@@ -78,8 +78,7 @@ class JobDriver(object):
 
     def run(self):
         data_id_to_ct = self._find_needed_data()
-        go_on = True
-        while go_on:
+        while len(data_id_to_ct)>0:
             max_id = None
             max_ct = -1
             for data_id in data_id_to_ct:
@@ -88,10 +87,18 @@ class JobDriver(object):
                         max_id = data_id
                         max_ct = data_id_to_ct[data_id]
 
-            data = self._butler.get_data(data_id[0],
-                                         dataId=json.loads(data_id[1]))
+            print('max_id ',max_id)
+            data = self._butler.get(max_id[0],
+                                    dataId=json.loads(max_id[1]))
+
+            data_id_to_ct.pop(max_id)
+
             self._data_dict[data_id] = data
             self._run_all()
+            needs_popping = []
             for data_id in self._data_dict:
                 if not self._is_data_needed(data_id):
-                    self._data_dict.pop(data_id)
+                    needs_popping.append(data_id)
+
+            for data_id in needs_popping:
+                self._data_dict.pop(data_id)
