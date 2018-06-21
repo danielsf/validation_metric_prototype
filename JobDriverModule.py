@@ -102,3 +102,10 @@ class JobDriver(object):
 
             for data_id in needs_popping:
                 self._data_dict.pop(data_id)
+
+        for metric in self._metric_list:
+            if hasattr(metric, '_unique_id'):
+                print('\n%s' % metric._unique_id)
+            report = metric.measurement.report()
+            report_table = report.make_table()
+            print(report_table)

@@ -15,6 +15,7 @@ class CtMetricCCD(MetricContainer):
 
         data_dict = json.loads(self.data_request[0][1])
         i_ccd = data_dict['ccd']
+        self._unique_id = 'CCD: %d' % i_ccd
         print('measured %d source count %d' % (i_ccd, src_ct))
         job = lsst_verify.Job.load_metrics_package()
         job.metrics.update(self._metric_set)
@@ -25,6 +26,7 @@ class CtMetricCCD(MetricContainer):
 class CtMetricFP(MetricContainer):
 
     def do_measurement(self, data_dict):
+        self._unique_id = 'Full Focal Plane'
         src_ct = 0
         for data_id in self.data_request:
             data = data_dict[data_id]
