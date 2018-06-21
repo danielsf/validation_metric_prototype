@@ -1,4 +1,5 @@
 import os
+import json
 
 from MetricUtils import are_data_requests_identical
 
@@ -64,11 +65,13 @@ class MetricContainer(object):
         if not isinstance(val[1], dict):
             raise RuntimeError("data_request[1] is not a dict")
 
+        val_load = (val[0], json.dumps(val[1], sort_keys=True))
+
         is_duplicate = False
         for data in self._data_request:
-            if are_data_requests_identical(data, val):
+            if are_data_requests_identical(data, val_load):
                 is_duplicate = True
                 break
 
         if not is_duplicate:
-            self._data_request.append(val)
+            self._data_request.append(val_load)
