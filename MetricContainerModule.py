@@ -1,6 +1,8 @@
 import os
 import json
 
+import lsst.verify as lsst_verify
+
 from MetricUtils import are_data_requests_identical
 
 __all__ = ["MetricContainer"]
@@ -33,6 +35,7 @@ class MetricContainer(object):
             raise RuntimeError("%s is not a valid yaml file" % val)
 
         self._metric_yaml = val
+        self._metric_set = lsst_verify.MetricSet.load_single_package(self._metric_yaml)
 
     @property
     def specs_dir(self):
@@ -45,6 +48,9 @@ class MetricContainer(object):
 
         if not os.path.exists(val) or not os.path.isdir(val):
             raise RuntimeError("%s is not a valid directory for specs_dir" % val)
+
+        self._specs_dir = val
+        self._specs_set = lsst_verify.SpecificationSet.load_single_package(self._specs_dir)
 
     @property
     def data_request(self):
