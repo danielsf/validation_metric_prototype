@@ -1,5 +1,7 @@
 import os
 
+from MetricUtils import are_data_requests_identical
+
 __all__ = ["MetricContainer"]
 
 class MetricContainer(object):
@@ -64,17 +66,9 @@ class MetricContainer(object):
 
         is_duplicate = False
         for data in self._data_request:
-            if is_duplicate:
+            if are_data_requests_identical(data, val):
+                is_duplicate = True
                 break
-            if data[0] == val[0]:
-                k1 = list(data[1].keys()).sort()
-                k2 = list(val[1].keys()).sort()
-                if k1 != k2:
-                    continue
-                for k in data[1].keys():
-                    if data[1][k] != val[1][k]:
-                        continue
-                 is_duplicate = True
 
         if not is_duplicate:
             self._data_request.append(val)
