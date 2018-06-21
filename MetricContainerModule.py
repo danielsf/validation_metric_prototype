@@ -36,15 +36,15 @@ class MetricContainer(object):
 
     @property
     def specs_dir(self):
-        retur self._specs_dir
+        return self._specs_dir
 
     @specs_dir.setter
-    def specs_dir(self, val)
+    def specs_dir(self, val):
         if self._specs_dir is not None:
             raise RuntimeError("Already set self._specs_dir")
 
         if not os.path.exists(val) or not os.path.isdir(val):
-            raise RuntimeError("%s is not a valid directory for specs_dir")
+            raise RuntimeError("%s is not a valid directory for specs_dir" % val)
 
     @property
     def data_request(self):
