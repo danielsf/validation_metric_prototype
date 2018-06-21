@@ -73,8 +73,8 @@ class JobDriver(object):
                 if data_id not in self._data_dict:
                     ready_to_run = False
                     break
-                if ready_to_run:
-                    metric.do_measurement(self._data_dict)
+            if ready_to_run:
+                metric.do_measurement(self._data_dict)
 
     def run(self):
         data_id_to_ct = self._find_needed_data()
@@ -87,13 +87,13 @@ class JobDriver(object):
                         max_id = data_id
                         max_ct = data_id_to_ct[data_id]
 
-            print('loading ',max_id)
+            print('loading ',max_id,len(data_id_to_ct))
             data = self._butler.get(max_id[0],
                                     dataId=json.loads(max_id[1]))
 
             data_id_to_ct.pop(max_id)
 
-            self._data_dict[data_id] = data
+            self._data_dict[max_id] = data
             self._run_all()
             needs_popping = []
             for data_id in self._data_dict:
