@@ -103,8 +103,7 @@ class JobDriver(object):
             for data_id in needs_popping:
                 self._data_dict.pop(data_id)
 
-        for i_metric, metric in enumerate(self._metric_list):
-            metric.measurement.write('job_json_%d.json' % i_metric)
+        for metric in self._metric_list:
             if hasattr(metric, '_unique_id'):
                 print('\n%s' % metric._unique_id)
             report = metric.measurement.report()
