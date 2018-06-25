@@ -35,6 +35,12 @@ class CtMetricFP(MetricContainer):
 
         ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
                                           src_ct*astropy_units.dimensionless_unscaled)
+
+        subset_ra = data['coord_ra']
+        ct_meas.extras['ra_sub'] = lsst_verify.Datum(subset_ra, label='ra_sub',
+                                                     description='Subset of RA of sources',
+                                                     unit=astropy_units.radian)
+
         print('measured fp source count %d' % src_ct)
         job = lsst_verify.Job.load_metrics_package()
         job.metrics.update(self._metric_set)
