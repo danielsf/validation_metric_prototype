@@ -1,3 +1,4 @@
+import getpass
 import json
 import astropy.units as astropy_units
 import lsst.verify as lsst_verify
@@ -62,3 +63,8 @@ if __name__ == "__main__":
     job_driver.add_metric(fp_metric)
     job_driver.run()
     fp_metric.measurement.write('dummy_ct_metric_output.json')
+
+    username = getpass.getuser()
+    password = getpass.getpass(prompt='SQUASH password:')
+
+    fp_metric.load_definitions_to_squash(username, password)

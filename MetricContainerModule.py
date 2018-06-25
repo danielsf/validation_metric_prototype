@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 
 import lsst.verify as lsst_verify
 
@@ -14,6 +15,7 @@ class MetricContainer(object):
         self._specs_dir = None
         self._measurement = None
         self._data_request = []
+        self._squash_api_url = "https://squash-restful-api-sandbox.lsst.codes"
 
     def do_measurement(self, data):
         raise NotImplementedError("Have not implemented do_measurement")
@@ -81,3 +83,21 @@ class MetricContainer(object):
 
         if not is_duplicate:
             self._data_request.append(val_load)
+
+    def load_definitions_to_squash(self, username, password):
+
+        credentials = {'username':username, 'password':password}
+
+        r = requests.post('{}/auth'.format(self._squash_api_url), json=credentials)
+        access_token = r.json()['access_token']
+        headers = {'Authorization': 'JWT {}'.format(access_token)}
+        r = requests.post('{}/metrics'.format(self._squash_api_url),
+                          json={'metrics': self._metric_set.json},
+                          headers=headers)
+        print(r.json())
+
+        r = requests.post('{}/specs'.format(self._squash_api_url),
+                          json={'specs': self._specs_set.json},
+                          headers=headers)
+
+        print(r.json())
