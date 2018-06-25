@@ -10,7 +10,7 @@ class CtMetricCCD(MetricContainer):
     def do_measurement(self, data_dict):
         data = data_dict[self.data_request[0]]
         src_ct = len(data['coord_ra'])
-        ct_meas = lsst_verify.Measurement('ct_metric.SrcCts',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCts',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
         data_dict = json.loads(self.data_request[0][1])
@@ -32,7 +32,7 @@ class CtMetricFP(MetricContainer):
             data = data_dict[data_id]
             src_ct += len(data['coord_ra'])
 
-        ct_meas = lsst_verify.Measurement('ct_metric.SrcCts',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCts',
                                           src_ct*astropy_units.dimensionless_unscaled)
         print('measured fp source count %d' % src_ct)
         job = lsst_verify.Job.load_metrics_package()
@@ -50,15 +50,15 @@ if __name__ == "__main__":
     job_driver.butler =butler
 
     fp_metric = CtMetricFP()
-    fp_metric.metric_yaml = "metrics/ct_metric.yaml"
-    fp_metric.specs_dir = "metrics/ct_metric"
+    fp_metric.metric_yaml = "metrics/dummy_ct_metric.yaml"
+    fp_metric.specs_dir = "metrics/dummy_ct_metric"
 
     for i_ccd in range(29):
         data_id = {'filter':'HSC-Y', 'ccd':i_ccd, 'visit':374}
         if butler.datasetExists('src', dataId=data_id):
             ccd_metric = CtMetricCCD()
-            ccd_metric.metric_yaml = "metrics/ct_metric.yaml"
-            ccd_metric.specs_dir = "metrics/ct_metric"
+            ccd_metric.metric_yaml = "metrics/dummy_ct_metric.yaml"
+            ccd_metric.specs_dir = "metrics/dummy_ct_metric"
             data_request = ('src', data_id)
             ccd_metric.add_data_request(data_request)
             fp_metric.add_data_request(data_request)
