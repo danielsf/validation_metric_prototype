@@ -10,7 +10,7 @@ class CtMetricCCD(MetricContainer):
     def do_measurement(self, data_dict):
         data = data_dict[self.data_request[0]]
         src_ct = len(data['coord_ra'])
-        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCts',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
         data_dict = json.loads(self.data_request[0][1])
@@ -32,7 +32,7 @@ class CtMetricFP(MetricContainer):
             data = data_dict[data_id]
             src_ct += len(data['coord_ra'])
 
-        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCts',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
                                           src_ct*astropy_units.dimensionless_unscaled)
         print('measured fp source count %d' % src_ct)
         job = lsst_verify.Job.load_metrics_package()
