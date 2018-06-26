@@ -4,7 +4,7 @@ import astropy.units as astropy_units
 import lsst.verify as lsst_verify
 import lsst.daf.persistence as daf_persistence
 from MetricContainerModule import MetricContainer
-from JobDriverModule import JobDriver
+from JobRunnerModule import JobRunner
 
 class CtMetricCCD(MetricContainer):
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     butler = daf_persistence.Butler('/datasets/hsc/repo/rerun/DM-13666/WIDE')
 
-    job_driver = JobDriver()
+    job_driver = JobRunner()
     job_driver.butler =butler
 
     fp_metric = CtMetricFP()

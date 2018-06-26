@@ -4,10 +4,10 @@ from lsst.daf.persistence import Butler
 
 from MetricContainerModule import MetricContainer
 
-__all__ = ["JobDriver"]
+__all__ = ["JobRunner"]
 
 
-class JobDriver(object):
+class JobRunner(object):
 
     def __init__(self):
         self._butler = None
@@ -21,7 +21,7 @@ class JobDriver(object):
     @butler.setter
     def butler(self, val):
         if not isinstance(val, Butler):
-            raise RuntimeError("Setting JobDriver.butler to "
+            raise RuntimeError("Setting JobRunner.butler to "
                                "something that is not a Butler.\n"
                                "Actual class of input:\n\n"
                                "%s\n" % type(butler))
@@ -36,7 +36,7 @@ class JobDriver(object):
         if not isinstance(val, MetricContainer):
             raise RuntimeError("Trying to put something that "
                                "is not a MetricContainer into "
-                               "JobDriver._metric_list")
+                               "JobRunner._metric_list")
 
         self._metric_list.append(val)
 
