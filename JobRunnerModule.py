@@ -2,7 +2,7 @@ import json
 
 from lsst.daf.persistence import Butler
 
-from MetricContainerModule import MetricContainer
+from JobContainerModule import JobContainer
 
 __all__ = ["JobRunner"]
 
@@ -33,9 +33,9 @@ class JobRunner(object):
         return self._metric_list
 
     def add_metric(self, val):
-        if not isinstance(val, MetricContainer):
+        if not isinstance(val, JobContainer):
             raise RuntimeError("Trying to put something that "
-                               "is not a MetricContainer into "
+                               "is not a JobContainer into "
                                "JobRunner._metric_list")
 
         self._metric_list.append(val)
@@ -44,7 +44,7 @@ class JobRunner(object):
 
         id_to_ct = {}
         for metric in self._metric_list:
-            if metric.measurement is not None:
+            if metric.job is not None:
                 continue
 
             for data in metric.data_request:
@@ -57,7 +57,7 @@ class JobRunner(object):
 
     def _is_data_needed(self, data_id):
         for metric in self._metric_list:
-            if metric.measurement is not None:
+            if metric.job is not None:
                 continue
             if data_id in metric.data_request:
                 return True
@@ -66,7 +66,7 @@ class JobRunner(object):
 
     def _run_all(self):
         for metric in self._metric_list:
-            if metric.measurement is not None:
+            if metric.job is not None:
                 continue
             ready_to_run = True
             for data_id in metric.data_request:
@@ -106,6 +106,6 @@ class JobRunner(object):
         for metric in self._metric_list:
             if hasattr(metric, '_unique_id'):
                 print('\n%s' % metric._unique_id)
-            report = metric.measurement.report()
+            report = metric.job.report()
             report_table = report.make_table()
             print(report_table)

@@ -6,14 +6,14 @@ import lsst.verify as lsst_verify
 
 from MetricUtils import are_data_requests_identical
 
-__all__ = ["MetricContainer"]
+__all__ = ["JobContainer"]
 
-class MetricContainer(object):
+class JobContainer(object):
 
     def __init__(self):
         self._metric_yaml = None
         self._specs_dir = None
-        self._measurement = None
+        self._job = None
         self._data_request = []
         self._squash_api_url = "https://squash-restful-api-sandbox.lsst.codes"
 
@@ -21,8 +21,8 @@ class MetricContainer(object):
         raise NotImplementedError("Have not implemented do_measurement")
 
     @property
-    def measurement(self):
-        return self._measurement
+    def job(self):
+        return self._job
 
     @property
     def metric_yaml(self):

@@ -3,10 +3,10 @@ import json
 import astropy.units as astropy_units
 import lsst.verify as lsst_verify
 import lsst.daf.persistence as daf_persistence
-from MetricContainerModule import MetricContainer
+from JobContainerModule import JobContainer
 from JobRunnerModule import JobRunner
 
-class CtMetricCCD(MetricContainer):
+class CtMetricCCD(JobContainer):
 
     def do_measurement(self, data_dict):
         data = data_dict[self.data_request[0]]
@@ -22,9 +22,9 @@ class CtMetricCCD(MetricContainer):
         job.metrics.update(self._metric_set)
         job.specs.update(self._specs_set)
         job.measurements.insert(ct_meas)
-        self._measurement = job
+        self._job = job
 
-class CtMetricFP(MetricContainer):
+class CtMetricFP(JobContainer):
 
     def do_measurement(self, data_dict):
         self._unique_id = 'Full Focal Plane'
@@ -46,7 +46,7 @@ class CtMetricFP(MetricContainer):
         job.metrics.update(self._metric_set)
         job.specs.update(self._specs_set)
         job.measurements.insert(ct_meas)
-        self._measurement = job
+        self._job = job
 
 
 if __name__ == "__main__":
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     job_driver.add_metric(fp_metric)
     job_driver.run()
-    fp_metric.measurement.write('dummy_ct_metric_output.json')
+    fp_metric.job.write('dummy_ct_metric_output.json')
 
     username = getpass.getuser()
     password = getpass.getpass(prompt='SQUASH password:')
