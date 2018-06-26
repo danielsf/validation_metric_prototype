@@ -71,6 +71,6 @@ if __name__ == "__main__":
     fp_metric.job.write('dummy_ct_metric_output.json')
 
     username = getpass.getuser()
-    password = getpass.getpass(prompt='SQUASH password:')
+    password = getpass.getpass(prompt='SQUASH password for {}:'.format(username))
 
     fp_metric.load_definitions_to_squash(username, password)
