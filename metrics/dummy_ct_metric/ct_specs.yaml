@@ -1,13 +1,13 @@
 ---
 name: "minimum"
-metric: "SrcCt"
+metric: "SrcCt2"
 threshold:
   operator: ">="
   unit: ''
   value: 10000.0
 ---
 name: "stretch"
-metric: "SrcCt"
+metric: "SrcCt2"
 threshold:
   operator: ">="
   unit: ''

@@ -13,7 +13,7 @@ class CtMetricCCD(JobContainer):
     def do_measurement(self, data_dict):
         data = data_dict[self.data_request[0]]
         src_ct = len(data['coord_ra'])
-        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt2',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
         data_dict = json.loads(self.data_request[0][1])
@@ -35,7 +35,7 @@ class CtMetricFP(JobContainer):
             data = data_dict[data_id]
             src_ct += len(data['coord_ra'])
 
-        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
+        ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt2',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
         ra = np.zeros(src_ct, dtype=float)
