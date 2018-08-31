@@ -1,6 +1,7 @@
 import getpass
 import json
 from subprocess import call
+import numpy as np
 import astropy.units as astropy_units
 import lsst.verify as lsst_verify
 import lsst.daf.persistence as daf_persistence
@@ -37,9 +38,25 @@ class CtMetricFP(JobContainer):
         ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
-        subset_ra = data['coord_ra']
-        ct_meas.extras['ra_sub'] = lsst_verify.Datum(subset_ra, label='ra_sub',
-                                                     description='Subset of RA of sources',
+        ra = np.zeros(src_ct, dtype=float)
+        dec = np.zeros(src_ct, dtype=float)
+
+        i_start = 0
+        for data_id in self.data_request:
+            data = data_dict[data_id]
+            local_ra = data['coord_ra']
+            local_dec = data['coord_dec']
+            ra[i_start:i_start+len(local_ra)] = local_ra
+            dec[i_start:i_start+len(local_dec)] = local_dec
+            i_start += len(local_ra)
+
+        ct_meas.extras['ra_rad'] = lsst_verify.Datum(ra, label='ra_rad',
+                                                     description='RA of sources in radians',
+                                                     unit=astropy_units.radian)
+
+
+        ct_meas.extras['dec_rad'] = lsst_verify.Datum(dec, label='dec_rad',
+                                                     description='Dec of sources in radians',
                                                      unit=astropy_units.radian)
 
         print('measured fp source count %d' % src_ct)
