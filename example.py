@@ -1,5 +1,6 @@
 import getpass
 import json
+from subprocess import call
 import astropy.units as astropy_units
 import lsst.verify as lsst_verify
 import lsst.daf.persistence as daf_persistence
@@ -68,9 +69,15 @@ if __name__ == "__main__":
 
     job_driver.add_metric(fp_metric)
     job_driver.run()
-    fp_metric.job.write('dummy_ct_metric_output.json')
+    json_file_name = 'dummy_ct_metric_output.json'
+    fp_metric.job.write(json_file_name)
 
     username = getpass.getuser()
     password = getpass.getpass(prompt='SQUASH password for {}:'.format(username))
 
     fp_metric.load_definitions_to_squash(username, password)
+
+    squash_url = fp_metric._squash_api_url
+
+    call(['dispatch_verify.py', '--ignore-lsstsw', '--url', '%s' % squash_url,
+         '--user', '%s' % username, '--password', '%s' % password, '%s' % json_file_name])
