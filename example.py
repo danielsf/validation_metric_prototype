@@ -40,14 +40,21 @@ class CtMetricFP(JobContainer):
 
         ra = np.zeros(src_ct, dtype=float)
         dec = np.zeros(src_ct, dtype=float)
+        flux = np.zeros(src_ct, dtype=float)
+        flux_sigma = np.zeros(src_ct, dtype=float)
 
         i_start = 0
         for data_id in self.data_request:
             data = data_dict[data_id]
+
             local_ra = data['coord_ra']
             local_dec = data['coord_dec']
+            local_flux = data['base_PsfFlux_flux']
+            local_sigma = data['base_PsfFlux_fluxSigma']
             ra[i_start:i_start+len(local_ra)] = local_ra
             dec[i_start:i_start+len(local_dec)] = local_dec
+            flux[i_start:i_start+len(local_flux)] = local_flux
+            flux_sigma[i_start:i_start+len(local_flux)] = local_sigma
             i_start += len(local_ra)
 
         ct_meas.extras['ra_rad'] = lsst_verify.Datum(ra, label='ra_rad',
@@ -58,6 +65,9 @@ class CtMetricFP(JobContainer):
         ct_meas.extras['dec_rad'] = lsst_verify.Datum(dec, label='dec_rad',
                                                      description='Dec of sources in radians',
                                                      unit=astropy_units.radian)
+
+        ct_meas.extras['flux'] = lsst_verify.Datum(flux, label='flux', unit='')
+        ct_meas.extras['flux_sigma'] = lsst_verify.Datum(flux_sigma, label='flux_sigma', unit='')
 
         print('measured fp source count %d' % src_ct)
         job = lsst_verify.Job.load_metrics_package()
