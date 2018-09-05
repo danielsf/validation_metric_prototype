@@ -32,42 +32,44 @@ class CtMetricFP(JobContainer):
         self._unique_id = 'Full Focal Plane'
         src_ct = 0
         for data_id in self.data_request:
-            data = data_dict[data_id]
-            src_ct += len(data['coord_ra'])
+            if data_id[0] == 'src':
+                data = data_dict[data_id]
+                src_ct += len(data['coord_ra'])
 
         ct_meas = lsst_verify.Measurement('dummy_ct_metric.SrcCt2',
                                           src_ct*astropy_units.dimensionless_unscaled)
 
-        ra = np.zeros(src_ct, dtype=float)
-        dec = np.zeros(src_ct, dtype=float)
-        flux = np.zeros(src_ct, dtype=float)
-        flux_sigma = np.zeros(src_ct, dtype=float)
+        psf_snr = np.zeros(src_ct, dtype=float)
+        model_snr = np.zeros(src_ct, dtype=float)
+        psf_mag = np.zeros(src_ct, dtype=float)
+        model_mag = np.zeros(src_ct, dtype=float)
+
+        data_id_set = ()
+        for data_id in self.data_request:
+            data_id_set.add(data_id[1])
 
         i_start = 0
-        for data_id in self.data_request:
-            data = data_dict[data_id]
+        for data_id in data_id_set:
+            data = data_dict[('src', data_id)]
+            calexp = data_dict[('calexp', data_id)]
+            calib = calexp.getCalib()
 
-            local_ra = data['coord_ra']
-            local_dec = data['coord_dec']
-            local_flux = data['base_PsfFlux_flux']
-            local_sigma = data['base_PsfFlux_fluxSigma']
-            ra[i_start:i_start+len(local_ra)] = local_ra
-            dec[i_start:i_start+len(local_dec)] = local_dec
-            flux[i_start:i_start+len(local_flux)] = local_flux
-            flux_sigma[i_start:i_start+len(local_flux)] = local_sigma
-            i_start += len(local_ra)
+            _psf_snr = data['base_PsfFlux_flux']/data['base_PsfFlux_sigma']
+            _model_snr = data['base_ModelFlux_flux']/data['base_ModelFlux_sigma']
+            _psf_mag = calib.getMagnitudes(data['base_PsfFlux_flux'])
+            _model_mag = calib.getMagnitudes(data['base_ModelFlux_flux'])
 
-        ct_meas.extras['ra_rad'] = lsst_verify.Datum(ra, label='ra_rad',
-                                                     description='RA of sources in radians',
-                                                     unit=astropy_units.radian)
+            psf_snr[i_start:i_start+len(_psf_snr)] = _psf_snr
+            model_snr[i_start:i_start+len(_model_snr)] = _model_snr
+            psf_mag[i_start:i_start+len(_psf_mag)] = _psf_mag
+            model_mag[i_start:i_start+len(_model_mag)] = _model_mag
 
+            i_start += len(_psf_mag)
 
-        ct_meas.extras['dec_rad'] = lsst_verify.Datum(dec, label='dec_rad',
-                                                     description='Dec of sources in radians',
-                                                     unit=astropy_units.radian)
-
-        ct_meas.extras['flux'] = lsst_verify.Datum(flux, label='flux', unit='')
-        ct_meas.extras['flux_sigma'] = lsst_verify.Datum(flux_sigma, label='flux_sigma', unit='')
+        ct_meas.extras['psf_snr'] = lsst_verify.Datum(psf_snr, label='psf_snr', unit='')
+        ct_meas.extras['model_snr'] = lsst_verify.Datum(model_snr, label='model_snr', unit='')
+        ct_meas.extras['psf_mag'] = lsst_verify.Datum(psf_mag, label='psf_mag', unit='')
+        ct_meas.extras['model_mag'] = lsst_verify.Datum(model_mag, label='model_mag', unit='')
 
         print('measured fp source count %d' % src_ct)
         job = lsst_verify.Job.load_metrics_package()
@@ -90,8 +92,12 @@ if __name__ == "__main__":
 
     for i_ccd in range(29):
         data_id = {'filter':'HSC-Y', 'ccd':i_ccd, 'visit':374}
-        if butler.datasetExists('src', dataId=data_id):
+        if (butler.datasetExists('src', dataId=data_id) and
+            butler.datasetExists('calexp', dataId=data_id)):
+
             data_request = ('src', data_id)
+            fp_metric.add_data_request(data_request)
+            data_request = ('calexp', data_id)
             fp_metric.add_data_request(data_request)
 
     job_driver.add_metric(fp_metric)
