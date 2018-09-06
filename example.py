@@ -44,25 +44,20 @@ class CtMetricFP(JobContainer):
         psf_mag = np.zeros(src_ct, dtype=float)
         model_mag = np.zeros(src_ct, dtype=float)
 
-        data_id_set = set()
+        data_id_set = ()
         for data_id in self.data_request:
             data_id_set.add(data_id[1])
 
         i_start = 0
         for data_id in data_id_set:
             data = data_dict[('src', data_id)]
-            #print(dir(data))
-            #print(data.getModelFluxDefinition())
-            #exit()
-            print('data_id ',data_id)
-            calexp = self._butler.get('calexp', dataId=json.loads(data_id))
+            calexp = data_dict[('calexp', data_id)]
             calib = calexp.getCalib()
-            calib.setThrowOnNegativeFlux(False)
 
-            _psf_snr = data['base_PsfFlux_flux']/data['base_PsfFlux_fluxSigma']
-            _model_snr = data['base_GaussianFlux_flux']/data['base_GaussianFlux_fluxSigma']
-            _psf_mag = calib.getMagnitude(data['base_PsfFlux_flux'])
-            _model_mag = calib.getMagnitude(data['base_GaussianFlux_flux'])
+            _psf_snr = data['base_PsfFlux_flux']/data['base_PsfFlux_sigma']
+            _model_snr = data['base_ModelFlux_flux']/data['base_ModelFlux_sigma']
+            _psf_mag = calib.getMagnitudes(data['base_PsfFlux_flux'])
+            _model_mag = calib.getMagnitudes(data['base_ModelFlux_flux'])
 
             psf_snr[i_start:i_start+len(_psf_snr)] = _psf_snr
             model_snr[i_start:i_start+len(_model_snr)] = _model_snr
@@ -102,14 +97,13 @@ if __name__ == "__main__":
 
             data_request = ('src', data_id)
             fp_metric.add_data_request(data_request)
+            data_request = ('calexp', data_id)
+            fp_metric.add_data_request(data_request)
 
     job_driver.add_metric(fp_metric)
     job_driver.run()
     json_file_name = 'dummy_ct_metric_output.json'
     fp_metric.job.write(json_file_name)
-
-    print('going to stop before loading')
-    exit()
 
     username = getpass.getuser()
     password = getpass.getpass(prompt='SQUASH password for {}:'.format(username))

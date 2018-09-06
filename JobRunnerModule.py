@@ -74,7 +74,6 @@ class JobRunner(object):
                     ready_to_run = False
                     break
             if ready_to_run:
-                metric._butler = self.butler
                 metric.do_measurement(self._data_dict)
 
     def run(self):
