@@ -1,0 +1,14 @@
+---
+name: "minimum"
+metric: "CosmosAssoc"
+threshold:
+  operator: "<="
+  unit: 'ABmag'
+  value: 0.01
+---
+name: "stretch"
+metric: "CosmosAssoc"
+threshold:
+  operator: "<="
+  unit: ''
+  value: 0.005

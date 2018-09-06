@@ -1,0 +1,8 @@
+CosmosAssoc:
+  unit: 'ABmag'
+  description: >
+    compare measured magnitudes with magnitudes of COSMOS nearest neighbor
+  reference:
+    url: /some/url/goes/here/
+  tags:
+    - photometry
